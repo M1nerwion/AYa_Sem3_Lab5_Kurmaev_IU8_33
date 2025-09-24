@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 
+
 namespace task2
 {
     internal class Program
@@ -19,12 +20,18 @@ namespace task2
 
             myList.Print();
 
-           // MyList<int> myList1Int = new MyList<int>() { 10, 15, 20 };//Доработать IEnumerator
+            Console.Write("Инициализация списка:");
+            MyList<int> myList1Int = new MyList<int>() { 10, 15, 20 };
+
+            myList1Int.Print();
+
+            Console.Write("Третий элемент списка myList1Int: ");
+            Console.WriteLine(myList1Int[2]);
         }
     }
 }
 
-class MyList<T> //:IEnumerable<T>
+class MyList<T> :IEnumerable
 {
     public Element<T> first;
 
@@ -33,7 +40,7 @@ class MyList<T> //:IEnumerable<T>
 
     public MyList(params T?[] elements)
     {
-        first = new Element<T>(0);
+        first = new Element<T>(0); //Создаем Элемент по Умолчанию
 
         _Count = 0;
         for (int i = 0; i < elements.Length; i++)
@@ -51,14 +58,14 @@ class MyList<T> //:IEnumerable<T>
     }
 
 
-    public class Element<K>
+    public class Element<K>//Класс элементов
     {
-        public Element<K>? Next;
-        public int Number { get; }
+        public Element<K>? Next;//Указатель на следующий элемент списка
+        public int Number { get; } //Номер элемента в списке
 
-        private K? _value;
+        private K? _value; //Значение элемента
 
-        public K? Value
+        public K? Value //Свойство задающее Значение элемента
         {
             get { return _value; }
             set { _value = value; }
@@ -76,17 +83,45 @@ class MyList<T> //:IEnumerable<T>
             this.Number = Number;
             this._value = _value;
         }
-    }//Класс элементов
+    }
 
-    //class ListEnumerator : IEnumerator<Element<T>> {
-    //{
-    //    public bool MoveNext()
-    //    {
-    //        if 
-    //    }
-    //}
+    
+    class ListEnumerator : IEnumerator //Описание Enumerator для элементов класса
+    {
+        private Element<T>? elem;
+        private Element<T>? ifirst;
+        public ListEnumerator(Element<T>? ifirst)
+        {
+            this.ifirst = ifirst;
+            elem = ifirst;
+        }
 
-    //public IEnumerator<T> GetEnumerator() => days.GetEnumerator();
+        public bool MoveNext()//Метод MoveNext() перемещает указатель на текущий элемент на следующую позицию в последовательности.
+        {
+            if (elem?.Next is not null) { elem = elem.Next; }
+            else { return false; }
+            return true;
+        }
+
+        public object Current //Свойство Current возвращает объект в последовательности, на который указывает указатель.
+        { 
+            get 
+            { 
+                if (elem is null) throw new ArgumentException(); 
+                else return elem; 
+            } 
+        }
+
+        public void Reset()//Метод Reset() сбрасывает указатель позиции в начальное положение.
+        {
+            elem = ifirst;
+        }
+
+        public void Dispose() { } //Требовал наличие, но функционал не обязателен
+    }
+
+    public IEnumerator GetEnumerator() => new ListEnumerator(first);//Описание GetEnumerator
+
 
     public void Add(T? _value)//Добавление элемента в список
     {
@@ -101,7 +136,7 @@ class MyList<T> //:IEnumerable<T>
         _Count++;
     }
 
-    public T? this[int index]
+    public T? this[int index]//Индексатор, возвращает значение элемента списка
     {
         get
         {
@@ -109,7 +144,7 @@ class MyList<T> //:IEnumerable<T>
             if (index >= Count) { throw new IndexOutOfRangeException(); }
             for (int i = 0; i < index; i++)
             {
-                temp = first.Next;
+                temp = temp.Next;
             }
             return temp.Value;
         }
@@ -119,24 +154,24 @@ class MyList<T> //:IEnumerable<T>
             if (index >= Count) { throw new IndexOutOfRangeException(); }
             for (int i = 0; i < index; i++)
             {
-                temp = first.Next;
+                temp = temp.Next;
             }
             temp?.Value = value;
         }
-    }//Индексатор, возвращает значение элемента списка
+    }
 
-    private Element<T>? GetElement(int index)
+    private Element<T>? GetElement(int index)//Метод - Индексатор, возвращает элемента 
     {
         Element<T>? temp = first;
         if (index >= Count) { throw new IndexOutOfRangeException(); }
         for (int i = 0; i < index; i++)
         {
-            temp = first.Next;
+            temp = temp.Next;
         }
         return temp;
     }
 
-    public void Print()
+    public void Print()//Метод, который выводит весь список на экран
     {
         Console.WriteLine("\nВесь список:");
         for (int i = 0; i < this.Count; i++)
