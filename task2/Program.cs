@@ -27,7 +27,46 @@ namespace task2
 
             Console.Write("Третий элемент списка myList1Int: ");
             Console.WriteLine(myList1Int[2]);
+
+            Console.WriteLine("\nВесь список myList с помощью foreach");
+            foreach (Element<string> temp in myList)
+            {
+                Console.WriteLine($"Элемент №{temp.Number}: {temp.Value}");
+            }
+
+            Console.WriteLine("\nВесь список myList1Int с помощью foreach");
+            foreach (Element<int> temp in myList1Int)
+            {
+                Console.WriteLine($"Элемент №{temp.Number}: {temp.Value}");
+            }
         }
+    }
+}
+
+public class Element<K>//Класс элементов
+{
+    public Element<K>? Next;//Указатель на следующий элемент списка
+    public int Number { get; } //Номер элемента в списке
+
+    private K? _value; //Значение элемента
+
+    public K? Value //Свойство задающее Значение элемента
+    {
+        get { return _value; }
+        set { _value = value; }
+    }
+
+    public Element(int Number)
+    {
+        Next = default;
+        this.Number = Number;
+        _value = default;
+    }
+    public Element(int Number, K? _value)
+    {
+        Next = default;
+        this.Number = Number;
+        this._value = _value;
     }
 }
 
@@ -56,43 +95,15 @@ class MyList<T> :IEnumerable
         }
         _Count = elements.Length;
     }
-
-
-    public class Element<K>//Класс элементов
-    {
-        public Element<K>? Next;//Указатель на следующий элемент списка
-        public int Number { get; } //Номер элемента в списке
-
-        private K? _value; //Значение элемента
-
-        public K? Value //Свойство задающее Значение элемента
-        {
-            get { return _value; }
-            set { _value = value; }
-        }
-
-        public Element(int Number)
-        {
-            Next = default;
-            this.Number = Number;
-            _value = default;
-        }
-        public Element(int Number, K? _value)
-        {
-            Next = default;
-            this.Number = Number;
-            this._value = _value;
-        }
-    }
-
     
     class ListEnumerator : IEnumerator //Описание Enumerator для элементов класса
     {
         private Element<T>? elem;
         private Element<T>? ifirst;
-        public ListEnumerator(Element<T>? ifirst)
+        public ListEnumerator(Element<T>? first)
         {
-            this.ifirst = ifirst;
+            this.ifirst = new Element<T>(0);
+            ifirst.Next = first;//Нам необъходимо сделать начальную позицию -1
             elem = ifirst;
         }
 
