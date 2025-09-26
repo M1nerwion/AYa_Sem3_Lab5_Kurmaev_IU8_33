@@ -22,7 +22,6 @@ namespace task3
             Console.Write("Элемент со значением 'Бауманка': ");
             Console.WriteLine(myDictionary["Бауманка"]);
 
-
             myDictionary.Add("Бауманка", "Измайлово");
             Console.WriteLine(myDictionary.Count);
 
@@ -32,11 +31,11 @@ namespace task3
                 Console.WriteLine($"Ключ: {temp.key}; Значение: {temp.Value}");
             }
 
-            Console.WriteLine("\nНахождение всех элементов с ключом 'Бауманка' с помощью foreach");
-            foreach (Para<string, string> temp in myDictionary)
-            {
-                if (temp.key == "Бауманка") Console.WriteLine($"Ключ: {temp.key}; Значение: {temp.Value}");
-            }
+            //Console.WriteLine("\nНахождение всех элементов с ключом 'Бауманка' с помощью foreach");
+            //foreach (Para<string, string> temp in myDictionary)
+            //{
+            //    if (temp.key == "Бауманка") Console.WriteLine($"Ключ: {temp.key}; Значение: {temp.Value}");
+            //}
         }
     }
 }
@@ -130,13 +129,35 @@ class MyDictionary<TKey,TValue> : IEnumerable
     {
         Para<TKey, TValue> Para = new Para<TKey, TValue>(Count, key, _value);
 
-        if (Count == 0) { first = Para; }
+        if (Count == 0) { first = Para; _Count++; Console.WriteLine($"Добавлен объект: Ключ: {key}; Значение: {_value}"); }
         else
         {
-            Para<TKey, TValue>? PreviusPara = GetPara(Count - 1);
-            PreviusPara?.Next = Para;
+            int pos = contain(key);
+            if (pos >= 0) 
+            {
+                Para<TKey, TValue> i = first;
+                for (; i.Number != pos; i = i.Next) { }
+                i.Value = _value;
+                Console.WriteLine($"В процессе добавления изменен объект на: Ключ: {key}; Значение: {_value}");
+            }
+            else
+            {
+                Para<TKey, TValue>? PreviusPara = GetPara(Count - 1);
+                PreviusPara?.Next = Para;
+                _Count++;
+                Console.WriteLine($"Добавлен объект: Ключ: {key}; Значение: {_value}");
+            }
         }
-        _Count++;
+    }
+
+    private int contain(TKey key)//Проверяет есть ли элемент с данным ключом в словаре, если да, то возвращает номер элемента, если нет, то -1
+    {
+
+        for (Para<TKey, TValue> i = first; i.Next is not null; i = i.Next)
+        {
+            if (i.key.Equals(key)) return i.Number;
+        }
+        return -1;
     }
 
     public TValue? this[TKey? index]//Индексатор, возвращает значение элемента списка

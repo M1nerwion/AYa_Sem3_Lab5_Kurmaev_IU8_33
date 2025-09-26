@@ -41,7 +41,7 @@ namespace task2
             }
         }
     }
-}
+} 
 
 public class Element<K>//Класс элементов
 {
